@@ -1,6 +1,6 @@
 # flix — صورة إنتاج. لا npm dependencies إطلاقاً (node:sqlite مدمج)،
-# فلا خطوة npm install ولا قفل إصدارات — فقط node:22 مع الكود.
-FROM node:22-alpine
+# فلا خطوة npm install ولا قفل إصدارات — فقط node:24 مع الكود.
+FROM node:24-alpine
 
 # الإعدادات الثابتة للصورة (المتغيرات الحساسة تجي من env_file في compose)
 ENV NODE_ENV=production \
@@ -27,4 +27,4 @@ EXPOSE 8095
 
 VOLUME ["/app/data"]
 
-CMD ["node", "src/server.js"]
+CMD ["sh", "-c", "node src/seed-if-empty.js; exec node src/server.js"]

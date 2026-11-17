@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: flix
+    runtime: docker
+    plan: free
+    region: frankfurt
+    healthCheckPath: /healthz
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: HOST
+        value: 0.0.0.0
+      - key: TRUST_PROXY
+        value: "1"
+      - key: SEED_PAGES
+        value: "20"
+      - key: TMDB_API_KEY
+        sync: false
+      - key: ADMIN_KEY
+        sync: false
