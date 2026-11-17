@@ -8,3 +8,5 @@ test/assets/
 .env.local
 
 deploy/push-github.ps1
+
+deploy/keys/
