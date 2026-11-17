@@ -1,3 +1,13 @@
+---
+title: flix
+emoji: 🎬
+colorFrom: red
+colorTo: gray
+sdk: docker
+app_port: 8095
+pinned: false
+---
+
 # سينمانا — flix
 
 موقع أفلام ومسلسلات: بحث عربي فوري، كتالوج من TMDB + YTS، بث عبر سيرفرات امبد خارجية، وروابط تحميل magnet. Node 22+، بدون أي npm dependency.
