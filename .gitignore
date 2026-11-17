@@ -6,3 +6,5 @@ shot-*.png
 test/assets/
 .DS_Store
 .env.local
+
+deploy/push-github.ps1
