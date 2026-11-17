@@ -1,0 +1,75 @@
+# flix — نشر كامل: التطبيق + نفق cloudflared، بلا منفذ مفتوح على الإنترنت.
+#
+# المتطلبات في .env (بجانب هذا الملف، لا يُرفع إلى أي مستودع):
+#   CLOUDFLARED_TUNNEL_TOKEN=eyJ...   (Cloudflare Zero Trust -> Networks -> Tunnels -> توكن)
+#   TMDB_API_KEY=...                  (اختياري)
+#   ADMIN_KEY=...                     (اختياري — يفعّل نقاط الأدمن)
+#
+# ملاحظة rate-limit لكل IP: src/security.js يثق بـ CF-Connecting-IP فقط إذا
+# كان الطلب جاي من 127.0.0.1. بالتجميع الطبيعي (شبكة bridge) يتصل cloudflared
+# بـ http://flix:8095 ويرى التطبيق IP الحاوية — فيصير الحد الإجمالي مو لكل زائر.
+# الحل الصحيح: شيل التعليق عن network_mode في cloudflared، وغير ingress إلى
+# http://localhost:8095 (انظر DEPLOY.md) — فيصير نظير الاتصال loopback فعلاً.
+
+name: flix
+
+services:
+  flix:
+    build: .
+    image: flix:prod
+    container_name: flix
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      NODE_ENV: production
+      HOST: 0.0.0.0
+      TRUST_PROXY: "1"
+    volumes:
+      - flix-data:/app/data
+    read_only: true
+    tmpfs:
+      - /tmp:size=64m,mode=1777
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    mem_limit: 512m
+    ports:
+      # فحص ومراقبة من السيرفر نفسه فقط — لا يُفتح على 0.0.0.0 أبداً
+      - "127.0.0.1:8095:8095"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://127.0.0.1:8095/healthz || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+
+  cloudflared:
+    # إصدار مثبّت — راجع https://github.com/cloudflare/cloudflared/releases
+    # لأحدث تاغ وحوّله هنا (ممنوع latest بدون داعي)
+    image: cloudflare/cloudflared:2025.2.1
+    container_name: flix-cloudflared
+    restart: unless-stopped
+    command: tunnel run
+    environment:
+      TUNNEL_TOKEN: ${CLOUDFLARED_TUNNEL_TOKEN:?ضع CLOUDFLARED_TUNNEL_TOKEN في .env}
+    cap_drop:
+      - ALL
+    read_only: true
+    tmpfs:
+      - /tmp:size=32m,mode=1777
+    security_opt:
+      - no-new-privileges:true
+    mem_limit: 256m
+    depends_on:
+      flix:
+        condition: service_healthy
+    # الوضع الصحيح لـ TRUST_PROXY=1 (rate limit لكل IP حقيقي):
+    # 1) علّق network_mode تحت
+    # 2) علّق ports عند flix فوق
+    # 3) غير ingress في deploy/cloudflared/config.yml إلى http://localhost:8095
+    # network_mode: "service:flix"
+
+volumes:
+  flix-data:

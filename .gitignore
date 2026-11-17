@@ -1,0 +1,8 @@
+node_modules/
+data/
+.env
+*.log
+shot-*.png
+test/assets/
+.DS_Store
+.env.local

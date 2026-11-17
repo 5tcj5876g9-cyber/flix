@@ -1,0 +1,17 @@
+# لا شيفرة سياق زائد في البناء — الأسرار لا تدخل السياق أصلاً
+.env
+.env.*
+data/
+test/
+deploy/
+*.log
+*.png
+*.db
+*.db-wal
+*.db-shm
+node_modules/
+.git/
+.gitignore
+Dockerfile
+docker-compose.yml
+DEPLOY.md

@@ -1,0 +1,20 @@
+{
+  "name": "flix",
+  "version": "1.1.0",
+  "private": true,
+  "type": "module",
+  "description": "كتالوج أفلام ومسلسلات مع بحث عربي، بث عبر سيرفرات امبد، وروابط تحميل",
+  "engines": {
+    "node": ">=22.5.0"
+  },
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "ingest": "node src/ingest.js --source yts --pages 30",
+    "ingest:all": "node src/ingest.js --source auto --kind all --pages 20",
+    "probe": "node src/probe.js",
+    "test": "node test/fts-check.mjs",
+    "smoke": "node test/api-smoke.mjs",
+    "verify:embeds": "node test/verify-embeds.mjs"
+  }
+}

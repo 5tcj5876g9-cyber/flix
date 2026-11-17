@@ -1,0 +1,26 @@
+# flix — نفق cloudflared (وضع config-file: بدل التوكن)
+# 1) أنشئ النفق:     cloudflared tunnel login && cloudflared tunnel create flix-tunnel
+# 2) بدّل UUID في tunnel و credentials-file
+# 3) اربط الـ DNS:   cloudflared tunnel route dns flix-tunnel flix.example.com
+# 4) شغّل:           cloudflared --config config.yml tunnel run flix-tunnel
+#
+# protocol: http2 هو مفتاح cloudflared الفعلي لإجبار بروتوكول http2
+# (المكافئ الصحيح لـ "http2: true" — لا يوجد مفتاح بهذا الاسم في config.yml)
+
+tunnel: REPLACE-WITH-TUNNEL-UUID
+credentials-file: /etc/cloudflared/REPLACE-WITH-TUNNEL-UUID.json
+
+# بروتوكول الاتصال بسحابة كلاودفلير
+protocol: http2
+
+ingress:
+  # الدومين عندك — كل طلب يروح للتطبيق على الشبكة الداخلية
+  - hostname: flix.example.com
+    service: http://flix:8095
+    originRequest:
+      connectTimeout: 30s
+      noTLSVerify: true
+      httpHostHeader: flix.example.com
+
+  # أي شيء آخر = 404
+  - service: http_status:404

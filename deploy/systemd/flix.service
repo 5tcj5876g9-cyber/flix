@@ -1,0 +1,38 @@
+[Unit]
+Description=flix — كتالوج أفلام (node، بلا dependencies)
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=simple
+User=flix
+Group=flix
+WorkingDirectory=/opt/flix
+EnvironmentFile=/opt/flix/.env
+Environment=NODE_ENV=production
+Environment=HOST=127.0.0.1
+ExecStart=/usr/bin/node src/server.js
+
+Restart=always
+RestartSec=3
+MemoryMax=512M
+
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectSystem=strict
+ProtectHome=yes
+ReadWritePaths=/opt/flix/data
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+ProtectClock=yes
+RestrictSUIDSGID=yes
+RestrictNamespaces=yes
+LockPersonality=yes
+RestrictRealtime=yes
+SystemCallArchitectures=native
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+LimitNOFILE=16384
+
+[Install]
+WantedBy=multi-user.target
